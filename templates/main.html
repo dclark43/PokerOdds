@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="static/main.css">
+</head>
+
+
+<body>
+
+</br>
+</br>
+</br>
+
+
+<!-- Cards displayed based on current selection - hand and flop/turn/river -->
+<form action="{{ url_for('analyze_cards') }}" method="post">
+  <div class="hand-row">
+    <div class="hand-column"></div>
+    <div class="hand-column"></div>
+    <div class="hand-column"></div>
+    <div class="hand-column" id="hand_card1">
+      <img src="{{ url_for('static', filename='placeholder.png') }}" style="width:100%" />
+      <input type="hidden" name="hand_card1">
+    </div>
+    <div class="hand-column" id="hand_card2">
+      <img src="{{ url_for('static', filename='placeholder.png') }}" style="width:100%" />
+      <input type="hidden" name="hand_card2">
+    </div>
+    <div class="hand-column"></div>
+    <div class="hand-column" id="river_card1">
+      <img src="{{ url_for('static', filename='placeholder.png') }}" style="width:100%" />
+      <input type="hidden" name="river_card1">
+    </div>
+    <div class="hand-column" id="river_card2">
+      <img src="{{ url_for('static', filename='placeholder.png') }}" style="width:100%" />
+      <input type="hidden" name="river_card2">
+    </div>
+    <div class="hand-column" id="river_card3">
+      <img src="{{ url_for('static', filename='placeholder.png') }}" style="width:100%" />
+      <input type="hidden" name="river_card3">
+    </div>
+    <div class="hand-column" id="river_card4">
+      <img src="{{ url_for('static', filename='placeholder.png') }}" style="width:100%" />
+      <input type="hidden" name="river_card4">
+    </div>
+    <div class="hand-column" id="river_card5">
+      <img src="{{ url_for('static', filename='placeholder.png') }}" style="width:100%" />
+      <input type="hidden" name="river_card5">
+    </div>
+  </div>
+
+
+  </br>
+
+  <div class="submit-row">
+    <input type="submit" class="btn btn-primary" value="Submit">
+  </div>
+</form>
+
+</br>
+
+
+<!-- Selection Grid - deck of cards -->
+<!-- Images from https://en.wikipedia.org/wiki/Standard_52-card_deck -->
+<div class="selection-row"> 
+  <div class="selection-column">
+    <img src="{{ url_for('static', filename='ace_spade.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='ace_heart.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='ace_diamond.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='ace_club.png') }}" style="width:100%" onclick="addToCards(this);" />
+  </div>
+  <div class="selection-column">
+    <img src="{{ url_for('static', filename='2_spade.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='2_heart.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='2_diamond.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='2_club.png') }}" style="width:100%" onclick="addToCards(this);" />
+  </div>
+  <div class="selection-column">
+    <img src="{{ url_for('static', filename='3_spade.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='3_heart.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='3_diamond.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='3_club.png') }}" style="width:100%" onclick="addToCards(this);" />
+  </div> 
+  <div class="selection-column">
+    <img src="{{ url_for('static', filename='4_spade.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='4_heart.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='4_diamond.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='4_club.png') }}" style="width:100%" onclick="addToCards(this);" />
+  </div> 
+  <div class="selection-column">
+    <img src="{{ url_for('static', filename='5_spade.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='5_heart.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='5_diamond.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='5_club.png') }}" style="width:100%" onclick="addToCards(this);" />
+  </div> 
+  <div class="selection-column">
+    <img src="{{ url_for('static', filename='6_spade.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='6_heart.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='6_diamond.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='6_club.png') }}" style="width:100%" onclick="addToCards(this);" />
+  </div>
+  <div class="selection-column">
+    <img src="{{ url_for('static', filename='7_spade.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='7_heart.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='7_diamond.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='7_club.png') }}" style="width:100%" onclick="addToCards(this);" />
+  </div>
+  <div class="selection-column">
+    <img src="{{ url_for('static', filename='8_spade.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='8_heart.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='8_diamond.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='8_club.png') }}" style="width:100%" onclick="addToCards(this);" />
+  </div>
+  <div class="selection-column">
+    <img src="{{ url_for('static', filename='9_spade.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='9_heart.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='9_diamond.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='9_club.png') }}" style="width:100%" onclick="addToCards(this);" />
+  </div>
+  <div class="selection-column">
+    <img src="{{ url_for('static', filename='10_spade.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='10_heart.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='10_diamond.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='10_club.png') }}" style="width:100%" onclick="addToCards(this);" />
+  </div>
+  <div class="selection-column">
+    <img src="{{ url_for('static', filename='jack_spade.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='jack_heart.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='jack_diamond.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='jack_club.png') }}" style="width:100%" onclick="addToCards(this);" />
+  </div>
+  <div class="selection-column">
+    <img src="{{ url_for('static', filename='queen_spade.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='queen_heart.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='queen_diamond.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='queen_club.png') }}" style="width:100%" onclick="addToCards(this);" />
+  </div>
+  <div class="selection-column">
+    <img src="{{ url_for('static', filename='king_spade.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='king_heart.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='king_diamond.png') }}" style="width:100%" onclick="addToCards(this);" />
+    <img src="{{ url_for('static', filename='king_club.png') }}" style="width:100%" onclick="addToCards(this);" />
+  </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+
+
+<script>
+  function addToCards(element) {
+    hand_card1 = document.getElementById("hand_card1");
+    var img_to_add = document.createElement("img");
+
+    hand_card1_filled = false;
+    hand_card2_filled = false;
+
+    hand_card1_img = hand_card1.getElementsByTagName("img")[0];
+    hand_card2_img = hand_card2.getElementsByTagName("img")[0];
+    river_card1_img = river_card1.getElementsByTagName("img")[0];
+    river_card2_img = river_card2.getElementsByTagName("img")[0];
+    river_card3_img = river_card3.getElementsByTagName("img")[0];
+    river_card4_img = river_card4.getElementsByTagName("img")[0];
+    river_card5_img = river_card5.getElementsByTagName("img")[0];
+
+    if(hand_card1_img.getAttribute('src') == "{{ url_for('static', filename='placeholder.png') }}") {
+      hand_card1_img.remove();
+      hand_card1.appendChild(img_to_add);
+
+      hand_card1_input = hand_card1.getElementsByTagName("input")[0];
+      hand_card1_input.value = element.getAttribute('src').split('/')[2];
+      hand_card1_filled = true;
+    }
+    else if(hand_card2_img.getAttribute('src') == "{{ url_for('static', filename='placeholder.png') }}") {
+      hand_card2_img.remove();
+      hand_card2.appendChild(img_to_add);
+
+      hand_card2_input = hand_card2.getElementsByTagName("input")[0];
+      hand_card2_input.value = element.getAttribute('src').split('/')[2];
+      hand_card2_filled = true;
+    }
+    else if(river_card1_img.getAttribute('src') == "{{ url_for('static', filename='placeholder.png') }}") {
+      river_card1_img.remove();
+      river_card1.appendChild(img_to_add);
+
+      river_card1_input = river_card1.getElementsByTagName("input")[0];
+      river_card1_input.value = element.getAttribute('src').split('/')[2];
+    }
+    else if(river_card2_img.getAttribute('src') == "{{ url_for('static', filename='placeholder.png') }}") {
+      river_card2_img.remove();
+      river_card2.appendChild(img_to_add);
+
+      river_card2_input = river_card2.getElementsByTagName("input")[0];
+      river_card2_input.value = element.getAttribute('src').split('/')[2];
+    }
+    else if(river_card3_img.getAttribute('src') == "{{ url_for('static', filename='placeholder.png') }}") {
+      river_card3_img.remove();
+      river_card3.appendChild(img_to_add);
+
+      river_card3_input = river_card3.getElementsByTagName("input")[0];
+      river_card3_input.value = element.getAttribute('src').split('/')[2];
+    }
+    else if(river_card4_img.getAttribute('src') == "{{ url_for('static', filename='placeholder.png') }}") {
+      river_card4_img.remove();
+      river_card4.appendChild(img_to_add);
+
+      river_card4_input = river_card4.getElementsByTagName("input")[0];
+      river_card4_input.value = element.getAttribute('src').split('/')[2];
+    }
+    else if(river_card5_img.getAttribute('src') == "{{ url_for('static', filename='placeholder.png') }}") {
+      river_card5_img.remove();
+      river_card5.appendChild(img_to_add);
+
+      river_card5_input = river_card5.getElementsByTagName("input")[0];
+      river_card5_input.value = element.getAttribute('src').split('/')[2];
+    }
+    else {
+      return;
+    }
+
+
+    if(hand_card1_filled && hand_card2_filled) {
+
+    }
+
+
+    img_to_add.src = element.src;
+    img_to_add.style = element.style;
+
+    img_to_add.addEventListener("click", function (e) {
+      card_slot = e.target.parentElement;
+
+      e.target.remove();
+
+      var placeholder = document.createElement("img");
+
+      placeholder.src = "{{ url_for('static', filename='placeholder.png') }}";
+      placeholder.style = "width: 100%";
+
+      card_slot.appendChild(placeholder);
+
+      input = card_slot.getElementsByTagName("input")[0];
+
+      input.value = "";
+      return;
+
+    });
+    return;
+
+  }
+
+
+
+</script>
+
+</body>
+
+
+</html>
+

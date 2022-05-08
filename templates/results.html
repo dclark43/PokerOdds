@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<link rel="stylesheet" href="static/main.css">
+</head>
+
+
+<body>
+
+<div class="hand-row">
+<div class="hand-column"></div>
+<div class="hand-column"></div>
+<div class="hand-column"></div>
+<div class="hand-column" id="hand_card1">
+  <img src="{{ url_for('static', filename=hand[0]) }}" style="width:100%" />
+  <input type="hidden" name="hand_card1">
+</div>
+<div class="hand-column" id="hand_card2">
+  <img src="{{ url_for('static', filename=hand[1]) }}" style="width:100%" />
+  <input type="hidden" name="hand_card2">
+</div>
+<div class="hand-column"></div>
+<div class="hand-column" id="river_card1">
+  <img src="{{ url_for('static', filename=river[0]) }}" style="width:100%" />
+  <input type="hidden" name="river_card1">
+</div>
+<div class="hand-column" id="river_card2">
+  <img src="{{ url_for('static', filename=river[1]) }}" style="width:100%" />
+  <input type="hidden" name="river_card2">
+</div>
+<div class="hand-column" id="river_card3">
+  <img src="{{ url_for('static', filename=river[2]) }}" style="width:100%" />
+  <input type="hidden" name="river_card3">
+</div>
+<div class="hand-column" id="river_card4">
+  <img src="{{ url_for('static', filename=river[3]) }}" style="width:100%" />
+  <input type="hidden" name="river_card4">
+</div>
+<div class="hand-column" id="river_card5">
+  <img src="{{ url_for('static', filename=river[4]) }}" style="width:100%" />
+  <input type="hidden" name="river_card5">
+</div>
+</div>
+
+
+<h1 style="text-align: center;">
+	{{ score.capitalize() }} 
+</h1>
+<h2 style="text-align: center;">
+	Rank: {{ rank1 }}
+</h2>
+<h2 style="text-align: center;">
+	Rank 2: {{ rank2 }}
+</h2>
+<h2 style="text-align: center;">
+	{{ percentage }} %
+</h2>
+
+</body>
+
+
+
+</html>
