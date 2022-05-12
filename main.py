@@ -5,7 +5,7 @@ from hands import *
 app = Flask(__name__)
 
 @app.route('/', methods = ['GET'])
-def main_page():
+def home():
     return render_template('main.html')
 
 
@@ -40,7 +40,7 @@ def analyze_cards():
 			print("Error: not a valid poker draw")
 
 
-	print(stage)
+	# print(stage)
 
 
 	hand = [hand_card1, hand_card2]
@@ -50,11 +50,16 @@ def analyze_cards():
 	inputs = get_inputs(stage = stage, hand = hand, river = river)
 
 	ah_odds_refactored = find_all_hands_odds_refactored(inputs)
+	print('\n******************\n')
 
-	# my_hand, my_hand_odds = find_hand_and_odds(inputs)
+	my_hand, my_hand_odds = find_hand_and_odds(inputs)
 
-	# return render_template('results.html', score = my_hand[0], rank1 = my_hand[1], rank2 = my_hand[2], percentage = my_hand_odds, hand = hand, river = river)
-	return render_template('main.html')
+	print(my_hand)
+	print(my_hand_odds)
+	print(ah_odds_refactored)
+
+	return render_template('results.html', score = my_hand[0], rank1 = my_hand[1], rank2 = my_hand[2], percentage = my_hand_odds, hand = hand, river = river)
+	# return render_template('main.html')
 
 
 if __name__ == "__main__":

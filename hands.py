@@ -34,7 +34,7 @@ class Hand:
 
 		for suit in suits:
 			if suits.count(suit) > suits_count[0]:
-				suits_count = (suit.count(suit), suit)
+				suits_count = (suits.count(suit), suit)
 
 		return suits_count
 
