@@ -50,7 +50,7 @@ class Hand:
 	#
 	# Return a list of n cards which have the highest ranks
 	#
-	def get_high_card(self, n):
+	def get_high_cards(self, n):
 		return list(self.rank_counts)[-n:]
 
 
