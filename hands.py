@@ -11,6 +11,7 @@ class Hand:
 	def __init__(self, cards):
 		self.cards = cards
 		self.suits = self.get_suits()
+		self.suit_counts = self.get_suit_counts()
 		self.ranks = self.get_ranks()
 		self.rank_counts = self.get_rank_counts()
 		self.max_rank_count = max(self.rank_counts.values())
@@ -18,6 +19,13 @@ class Hand:
 
 	def get_suits(self):
 		return [card[0] for card in self.cards]
+
+
+	def get_suit_counts(self):
+		suit_counts = collections.defaultdict(int)
+		for suit in self.suits:
+			suit_counts[suit] += 1
+		return suit_counts
 
 
 	def get_ranks(self):
@@ -32,199 +40,110 @@ class Hand:
 
 
 	def get_flush_count(self):
-		suits = self.get_suits()
-
 		suits_count = (0, -1)
-
-		for suit in suits:
-			if suits.count(suit) > suits_count[0]:
-				suits_count = (suits.count(suit), suit)
-
+		for suit in self.suits:
+			if self.suits.count(suit) > suits_count[0]:
+				suits_count = (self.suits.count(suit), suit)
 		return suits_count
 
 
-	def get_high_card(self):
-		rank = self.get_ranks().index(max(self.get_ranks()))
-		return rank
-
-
-
-	def is_pair(self):
-		pair_rank = 0
-		for rank in self.get_ranks():
-			if(self.get_ranks().count(rank) == 2):
-				pair_rank = rank
-
-		ranks = [rank for rank in self.get_ranks() if rank != pair_rank]
-
-		if(len(ranks) == 0):
-			return (False, 0, 0)
-
-		high_card = max(ranks)
-		
-		if(pair_rank != 0):
-			return ("pair", pair_rank, high_card)
-		return (False, 0, 0)
+	#
+	# Return a list of n cards which have the highest ranks
+	#
+	def get_high_card(self, n):
+		return list(self.rank_counts)[-n:]
 
 
 	def is_two_pair(self):
-		pair1_rank = 0
-		pair2_rank = 0
-		for rank in self.get_ranks():
-			if(self.get_ranks().count(rank) == 2):
-				pair1_rank = rank
+		pairs = []
+		high_card = 0
+		for rank in self.rank_counts:
+			if self.rank_counts[rank] == 2:
+				pairs.append(rank)
+			else:
+				high_card = rank
 
-		ranks = [rank for rank in self.get_ranks() if rank != pair1_rank]
-		
-		if(pair1_rank == 0):
-			return (False, 0, 0)
-
-		for rank in ranks:
-			if(ranks.count(rank) == 2):
-				pair2_rank = rank
-
-		ranks = [rank for rank in self.get_ranks() if (rank != pair1_rank and rank != pair2_rank)]
-		high_card = max(ranks)
-
-		if(pair2_rank != 0):
-			return ("two pair", max([pair1_rank, pair2_rank]), high_card)
+		if len(pairs) > 1 and high_card != 0:
+			return ("two pair", max([pairs[-1], pairs[-2]]), high_card)
 		return (False, 0, 0)
-
-
-
-	def is_three_of_a_kind(self):
-		three_rank = 0
-		for rank in self.get_ranks():
-			if(self.get_ranks().count(rank) == 3):
-				three_rank = rank
-
-		ranks = [rank for rank in self.get_ranks() if rank != three_rank]
-		if(len(ranks) == 0):
-			return (False, 0, 0)
-
-		high_card = max(ranks)
-		
-		if(three_rank != 0):
-			return ("3 of a kind", three_rank, high_card)
-		return (False, 0, 0)
-
 
 
 	def is_straight(self):
-		min_rank = 0
-		max_rank = 0
-		ranks = self.ranks
-		# [2,5,6,7,9]
-		'''for rank in ranks:
-			if (rank + 1) in ranks and (rank + 2) in ranks and (rank + 3) in ranks and (rank + 4) in ranks:
-				min_rank = rank
-				max_rank = rank + 4'''
-		for i in range(len(ranks) - 5):
-			for j in range(i + 5):
+		n = len(self.ranks)
+		i = n - 1
+		straight = []
+		while i > 3:
+			count = 0
+			j = i - 1
+			while j > i - 4:
+				# Difference between adjacent indices is not 1
+				if self.ranks[j] + 1 != self.ranks[j + 1]:
+					i = j
+					break
+				count += 1
+				j -= 1
+			if count == 4:
+				straight = self.ranks[j:i+1]
 
-
-		if min_rank != 0 and max_rank != 0:
-			return ("straight", max_rank, max_rank)
+		if len(straight) > 0:
+			return ("straight", straight[0], straight[-1])
 		return (False, 0, 0)
 
 
-
-
 	def is_flush(self):
-		suits = self.get_suits()
 		flush_suit = -1
-		for suit in suits:
-			if(suits.count(suit) == 5):
+		for suit in self.suit_counts:
+			if self.suit_counts[suit] == 5:
 				flush_suit = suit
 				break
 
-		if(flush_suit == -1):
+		if flush_suit == -1:
 			return (False, 0, 0)
 
 		flush_cards = []
+		max_rank = 0
 		for card in self.cards:
-			if(card[0] == flush_suit):
+			if card[0] == flush_suit:
+				max_rank = max(max_rank, card[1])
 				flush_cards.append(card)
 
-		max_rank = max([card[1] for card in flush_cards])
-
 		return ("flush", max_rank, max_rank)
-
 
 
 	def is_full_house(self):
 		three_rank = 0
 		pair_rank = 0
-		for rank in self.get_ranks():
-			if(self.get_ranks().count(rank) == 3):
+		for rank in self.rank_counts:
+			if self.rank_counts[rank] == 3:
 				three_rank = rank
-
-		if(three_rank == 0):
-			return (False, 0, 0)
-
-		ranks = [rank for rank in self.get_ranks() if rank != three_rank]
-
-		for rank in ranks:
-			if(ranks.count(rank) == 2):
+			elif self.rank_counts[rank] == 2:
 				pair_rank = rank
+
+		if three_rank != 0 and pair_rank != 0:
 			return ("full house", three_rank, pair_rank)
 		return (False, 0, 0)
 
 
+	#
+	# Check for "n of a kind"
+	#
+	def is_n_of_a_kind(self, n):
+		n_rank = 0
+		high_card = 0
+		for rank in self.rank_counts:
+			if self.rank_counts[rank] == n:
+				n_rank = rank 
+			else:
+				high_card = max(high_card, rank)
 
-	def is_four_of_a_kind(self):
-		four_rank = 0
-		for rank in self.get_ranks():
-			if(self.get_ranks().count(rank) == 4):
-				four_rank = rank
-
-		ranks = [rank for rank in self.get_ranks() if rank != four_rank]
-		if(len(ranks) == 0):
-			return (False, 0, 0)
-
-		high_card = max(ranks)
-		
-		if(four_rank != 0):
-			return ("4 of a kind", four_rank, high_card)
-		return (False, 0, 0)
-
-
-
-
-
-
+		if n_rank != 0 and high_card != 0:
+			if n != 2:
+				return (f"{n} of a kind", n_rank, high_card)
+			else:
+				return ("pair", n_rank, high_card)
 
 
 	def evaluate_hand(self):
-		'''pair_rank = 0
-		three_rank = 0
-		four_rank = 0
-		five_rank = 0
-		ranks = self.get_ranks()
-		suits = self.get_suits()
-
-		high_card = 0
-		best_score = ""'''
-
-		# 
-		# 2 2 5 5 5 7 9
-		#
-
-		'''for rank in ranks:
-			rank_count = ranks.count(rank)
-			if rank_count == 2:
-				pair_rank = rank
-				break
-			elif rank_count == 3:
-				three_rank = rank
-				break
-			elif rank_count == 4:
-				four_rank = rank
-				break
-			elif rank_count == 5:
-				five_rank = rank
-				break'''
-
 		rank_kinds = {
 			1: eval_all_unique,
 			2: eval_pair,
@@ -235,79 +154,47 @@ class Hand:
 
 		def eval_all_unique(self):
 			# Could be high card, straight, flush, or straight flush
-			if self.max_rank_count == 1:
-				return_tuple = ()
-				straight = self.is_straight()
-				flush = self.is_flush()
+			straight = self.is_straight()
+			flush = self.is_flush()
+			if straight[0] and not flush[0]:
+				return straight
+			elif not straight[0] and flush[0]:
+				return flush
+			elif straight[0] and flush[0]:
+				return ("straight flush", straight[1], straight[2])
+			else:
+				high_cards = self.get_high_cards(2)
+				return ("high card", high_cards[-1], high_cards[-2])
 
-				if straight[0]:
-					# print(straight)
-					return_tuple = straight
-				if flush[0]:
-					# print(flush)
-					return_tuple = flush
-				if straight[0] and flush[0]:
-					return_tuple = ("straight flush", straight[1], straight[2])
-
-				if not straight[0] and not flush[0]:
-					best_score = "high card"
-					high_card = max(ranks)
-					ranks.remove(high_card)
-					return_tuple = ("high card", high_card, max(ranks))
-
-				return return_tuple
 
 		def eval_pair(self):
-			# Check for two pair and full house and get high card, otherwise pair
-			elif(pair_rank != 0):
-				other_ranks = [rank for rank in ranks if rank != pair_rank]
+			# Checking for full house
+			full_house = self.is_full_house()
+			if full_house[0]:
+				return full_house
+			# Checking for two pair
+			two_pair = self.is_two_pair()
+			if two_pair[0]:
+				return two_pair 
+			# Return high card and pair if full house and two pair were not found
+			return self.is_n_of_a_kind(2)
 
-				for rank in other_ranks:
-					rank_count = other_ranks.count(rank)
-
-					if(rank_count == 2):
-						high_card = max([r for r in other_ranks if r != rank])
-						return ("two pair", pair_rank, high_card)
-					elif rank_count == 3:
-						return ("full house", rank, pair_rank)
-
-
-				high_card = max(other_ranks)
-				return ("pair", pair_rank, high_card)
 
 		def eval_three_kind(self):
-			# Three of a kind or full house
-			elif(three_rank != 0):
-				other_ranks = [rank for rank in ranks if rank != three_rank]
-
-				for rank in other_ranks:
-					rank_count = other_ranks.count(rank)
-
-					if(rank_count == 2):
-						return ("full house", three_rank, rank)
-					elif(rank_count == 3):
-						return ("full house", max([three_rank, rank]), min([three_rank, rank]))
-
-				high_card = max(other_ranks)
-				return ("3 of a kind", three_rank, high_card)
+			# Checking for full house
+			full_house = self.is_full_house()
+			if full_house[0]:
+				return full_house
+			else:
+				return self.is_n_of_a_kind(3)
 
 
 		def eval_four_kind(self):
-			# Four of a kind
-			elif(four_rank != 0):
-				other_ranks = [rank for rank in ranks if rank != four_rank]
-
-				high_card = max(other_ranks)
-				return ("4 of a kind", four_rank, high_card)
+			return self.is_n_of_a_kind(4)
 
 
 		def eval_five_kind(self):
-			# Five of a kind
-			elif(five_rank != 0):
-				other_ranks = [rank for rank in ranks if rank != five_rank]
-
-				high_card = max(other_ranks)
-				return ("4 of a kind", five_rank, high_card)
+			return self.is_n_of_a_kind(5)
 
 
 		return rank_kinds[self.max_rank_count]()
