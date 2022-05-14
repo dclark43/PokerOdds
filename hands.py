@@ -29,7 +29,7 @@ class Hand:
 
 
 	def get_ranks(self):
-		return sort([card[1] for card in self.cards])
+		return sorted([card[1] for card in self.cards])
 
 
 	def get_rank_counts(self):
@@ -144,15 +144,7 @@ class Hand:
 
 
 	def evaluate_hand(self):
-		rank_kinds = {
-			1: eval_all_unique,
-			2: eval_pair,
-			3: eval_three_kind,
-			4: eval_four_kind,
-			5: eval_five_kind
-		}
-
-		def eval_all_unique(self):
+		def eval_all_unique():
 			# Could be high card, straight, flush, or straight flush
 			straight = self.is_straight()
 			flush = self.is_flush()
@@ -167,7 +159,7 @@ class Hand:
 				return ("high card", high_cards[-1], high_cards[-2])
 
 
-		def eval_pair(self):
+		def eval_pair():
 			# Checking for full house
 			full_house = self.is_full_house()
 			if full_house[0]:
@@ -180,7 +172,7 @@ class Hand:
 			return self.is_n_of_a_kind(2)
 
 
-		def eval_three_kind(self):
+		def eval_three_kind():
 			# Checking for full house
 			full_house = self.is_full_house()
 			if full_house[0]:
@@ -189,13 +181,21 @@ class Hand:
 				return self.is_n_of_a_kind(3)
 
 
-		def eval_four_kind(self):
+		def eval_four_kind():
 			return self.is_n_of_a_kind(4)
 
 
-		def eval_five_kind(self):
+		def eval_five_kind():
 			return self.is_n_of_a_kind(5)
 
+
+		rank_kinds = {
+			1: eval_all_unique,
+			2: eval_pair,
+			3: eval_three_kind,
+			4: eval_four_kind,
+			5: eval_five_kind
+		}
 
 		return rank_kinds[self.max_rank_count]()
 

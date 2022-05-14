@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 from odds import *
 from hands import *
+import time
 
 app = Flask(__name__)
 
@@ -12,16 +13,15 @@ def home():
 
 @app.route('/analyze', methods = ['POST'])
 def analyze_cards():
+	start_time = time.time()
 	
 	hand_card1 = request.form['hand_card1']
 	hand_card2 = request.form['hand_card2']
-
 	river_card1 = request.form['river_card1']
 	river_card2 = request.form['river_card2']
 	river_card3 = request.form['river_card3']
 	river_card4 = request.form['river_card4']
 	river_card5 = request.form['river_card5']
-
 
 	# Determine stage based on how many cards are selected
 	stage = ""
@@ -40,27 +40,39 @@ def analyze_cards():
 			print("Error: not a valid poker draw")
 
 
-	# print(stage)
-
-
 	hand = [hand_card1, hand_card2]
 	river = [river_card1, river_card2, river_card3, river_card4, river_card5]
+	my_hand = Hand(card_names_to_tuples({ 'hand': hand, 'river': river }))
+
+	inputs = gather_inputs(stage = stage, hand = hand, river = river)
+
+	# Returns a dictionary of odds for all types of hands: {'high card': high_card_odds, 'pair': pair_odds, ...}
+	all_hand_types_odds = find_all_hand_types_odds(inputs)
+
+	print("\n")
+	print("My hand: ", hand)
+	print("eval: ", my_hand.evaluate_hand())
+	print("All hand types odds: ", all_hand_types_odds)
+
+	end_time = time.time()
+	print("total time (seconds) : ", str(end_time - start_time))
+	print("\n")
 
 
-	inputs = get_inputs(stage = stage, hand = hand, river = river)
-
-	ah_odds_refactored = find_all_hands_odds_refactored(inputs)
-	print('\n******************\n')
-
-	my_hand, my_hand_odds = find_hand_and_odds(inputs)
-
-	print(my_hand)
-	print(my_hand_odds)
-	print(ah_odds_refactored)
-
-	return render_template('results.html', score = my_hand[0], rank1 = my_hand[1], rank2 = my_hand[2], percentage = my_hand_odds, hand = hand, river = river)
-	# return render_template('main.html')
+	return render_template('results.html', hand = hand, river = river)
 
 
 if __name__ == "__main__":
 	app.run()
+
+
+
+
+
+
+
+
+
+
+
+
