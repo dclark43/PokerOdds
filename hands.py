@@ -69,6 +69,20 @@ class Hand:
 
 
 	def is_straight(self):
+		min_rank = 0
+		max_rank = 0
+		ranks = self.get_ranks()
+		for rank in ranks:
+			if (rank + 1) in ranks and (rank + 2) in ranks and (rank + 3) in ranks and (rank + 4) in ranks:
+				min_rank = rank
+				max_rank = rank + 4
+
+		if min_rank != 0 and max_rank != 0:
+			return ("straight", max_rank, max_rank - 1)
+		return (False, 0, 0)
+
+
+	def is_straight_refactored(self):
 		n = len(self.ranks)
 		i = n - 1
 		straight = []

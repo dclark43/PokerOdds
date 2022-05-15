@@ -1,55 +1,256 @@
+from asyncore import loop
 from odds import *
 from hands import *
 import time
+import unittest
 
 
-HANDS = ["high card", "pair", "two pair", "3 of a kind", "straight", "flush", "full house", "4 of a kind", "straight flush"]
-SUITS = ["spade", "heart", "diamond", "club"]
-RANKS = ["ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "jack", "queen", "king"]
+class TestOdds(unittest.TestCase):
+
+	# -------------------------------------------------------------------------------------
+	# 
+	#	ALL UNIQUE CARDS IN RIVER
+	# 
+	# -------------------------------------------------------------------------------------
+
+	# All unique cards in river and no possibility of straight or flush
+	def test_unique_river_no_straight_or_flush(self):
+		hand = ['5 diamonds', '10 hearts']
+		river = ['2 spades', '3 hearts', '7 clubs', '9 diamonds', 'queen spades']
+		inputs = { 'stage': 'river', 'card_names': { 'hand': hand, 'river': river } }
+
+		odds = find_all_hand_types_odds(inputs)
+		looping_odds = find_odds_by_looping(inputs)
+
+		self.assertEqual(odds, looping_odds)
+		self.assertEqual(sum(odds.values()), 1)
+
+	
+	# All unique cards in river with straight possibility - 3 in a row open ended
+	def test_unique_river_three_consecutive_open(self):
+		hand = ['5 diamonds', '10 hearts']
+		river = ['3 spades', '4 hearts', '5 clubs', '9 diamonds', 'queen spades']
+		inputs = { 'stage': 'river', 'card_names': { 'hand': hand, 'river': river } }
+
+		odds = find_all_hand_types_odds(inputs)
+		looping_odds = find_odds_by_looping(inputs)
+
+		self.assertEqual(odds, looping_odds)
+		self.assertEqual(sum(odds.values()), 1)
 
 
-def test_pair():
-	manual_input = False
+	# All unique cards in river with straight possibility - 3 in a row one ended
+	def test_unique_river_three_consecutive_low_ace(self):
+		hand = ['5 diamonds', '10 hearts']
+		river = ['ace spades', '2 hearts', '3 clubs', '9 diamonds', 'queen spades']
+		inputs = { 'stage': 'river', 'card_names': { 'hand': hand, 'river': river } }
 
-	auto_run_stage = "river"
-	hand_card1 = "5 hearts"
-	hand_card2 = "9 hearts"
-	river_card1 = "3 spades"
-	river_card2 = "ten clubs"
-	river_card3 = "5 diamonds"
-	river_card4 = "king heart" # king heart
-	river_card5 = "jack spade" # jack spade
+		odds = find_all_hand_types_odds(inputs)
+		looping_odds = find_odds_by_looping(inputs)
 
-	auto_run_hand = [hand_card1, hand_card2]
-	auto_run_river = [river_card1, river_card2, river_card3, river_card4, river_card5]
+		self.assertEqual(odds, looping_odds)
+		self.assertEqual(sum(odds.values()), 1)
 
 
-	card_names = get_inputs(manual_input, auto_run_stage = auto_run_stage, auto_run_hand = auto_run_hand, auto_run_river = auto_run_river)
+	# All unique cards in river with straight possibility - 3 with 1 card gap
+	def test_unique_river_three_in_straight_one_gap(self):
+		hand = ['5 diamonds', '10 hearts']
+		river = ['3 spades', '4 hearts', '6 clubs', '9 diamonds', 'queen spades']
+		inputs = { 'stage': 'river', 'card_names': { 'hand': hand, 'river': river } }
 
+		odds = find_all_hand_types_odds(inputs)
+		looping_odds = find_odds_by_looping(inputs)
 
-	(score, rank1, rank2) = find_hand_and_odds(card_names)
-
-	return (score == "pair") and (rank1 == 5) and (rank2 == 13)
-
-
-
-
+		self.assertEqual(odds, looping_odds)
+		self.assertEqual(sum(odds.values()), 1)
 
 
 
+	# All unique cards in river with straight possibility - 3 with 2 card gap
+	def test_unique_river_three_in_straight_two_gap(self):
+		hand = ['5 diamonds', '10 hearts']
+		river = ['3 spades', '4 hearts', '7 clubs', '9 diamonds', 'queen spades']
+		inputs = { 'stage': 'river', 'card_names': { 'hand': hand, 'river': river } }
+
+		odds = find_all_hand_types_odds(inputs)
+		looping_odds = find_odds_by_looping(inputs)
+
+		self.assertEqual(odds, looping_odds)
+		self.assertEqual(sum(odds.values()), 1)
+
+
+	# All unique cards in river with straight possibility - 4 in a row open ended
+	def test_unique_river_four_consecutive_open(self):
+		hand = ['5 diamonds', '10 hearts']
+		river = ['3 spades', '4 hearts', '5 clubs', '6 diamonds', 'queen spades']
+		inputs = { 'stage': 'river', 'card_names': { 'hand': hand, 'river': river } }
+
+		odds = find_all_hand_types_odds(inputs)
+		looping_odds = find_odds_by_looping(inputs)
+
+		self.assertEqual(odds, looping_odds)
+		self.assertEqual(sum(odds.values()), 1)
+
+
+	# All unique cards in river with straight possibility - 4 in a row one ended
+	def test_unique_river_four_consecutive_low_ace(self):
+		hand = ['5 diamonds', '10 hearts']
+		river = ['ace spades', '2 hearts', '3 clubs', '4 diamonds', 'queen spades']
+		inputs = { 'stage': 'river', 'card_names': { 'hand': hand, 'river': river } }
+
+		odds = find_all_hand_types_odds(inputs)
+		looping_odds = find_odds_by_looping(inputs)
+
+		self.assertEqual(odds, looping_odds)
+		self.assertEqual(sum(odds.values()), 1)
 
 
 
-def main():
+	# All unique cards in river with straight possibility - 4 with middle gap
+	def test_unique_river_four_in_straight_with_gap(self):
+		hand = ['5 diamonds', '10 hearts']
+		river = ['3 spades', '4 hearts', '6 clubs', '7 diamonds', 'queen spades']
+		inputs = { 'stage': 'river', 'card_names': { 'hand': hand, 'river': river } }
+
+		odds = find_all_hand_types_odds(inputs)
+		looping_odds = find_odds_by_looping(inputs)
+
+		self.assertEqual(odds, looping_odds)
+		self.assertEqual(sum(odds.values()), 1)
 
 
-	if test_pair(): 
-		print("PASSED ---------------- Pair") 
-	else: 
-		print("FAILED ---------------- Pair")
+
+
+	# -------------------------------------------------------------------------------------
+	# 
+	#	PAIR IN RIVER
+	# 
+	# -------------------------------------------------------------------------------------
 
 
 
+	# Pair in river with no straight or flush possible
+	def test_pair_river_no_straight_or_flush(self):
+		hand = ['5 diamonds', '10 hearts']
+		river = ['3 spades', '4 hearts', '9 clubs', '9 diamonds', 'queen spades']
+		inputs = { 'stage': 'river', 'card_names': { 'hand': hand, 'river': river } }
+
+		odds = find_all_hand_types_odds(inputs)
+		looping_odds = find_odds_by_looping(inputs)
+
+		self.assertEqual(odds, looping_odds)
+		self.assertEqual(sum(odds.values()), 1)
+
+
+	# pair in river with straight possibility - 3 in a row open ended
+	def test_pair_river_three_consecutive_open(self):
+		hand = ['5 diamonds', '10 hearts']
+		river = ['3 spades', '4 hearts', '5 clubs', '9 diamonds', '9 spades']
+		inputs = { 'stage': 'river', 'card_names': { 'hand': hand, 'river': river } }
+
+		odds = find_all_hand_types_odds(inputs)
+		looping_odds = find_odds_by_looping(inputs)
+
+		self.assertEqual(odds, looping_odds)
+		self.assertEqual(sum(odds.values()), 1)
+
+
+	# pair in river with straight possibility - 3 in a row one ended
+	def test_pair_river_three_consecutive_low_ace(self):
+		hand = ['5 diamonds', '10 hearts']
+		river = ['ace spades', '2 hearts', '3 clubs', '9 diamonds', '9 spades']
+		inputs = { 'stage': 'river', 'card_names': { 'hand': hand, 'river': river } }
+
+		odds = find_all_hand_types_odds(inputs)
+		looping_odds = find_odds_by_looping(inputs)
+
+		self.assertEqual(odds, looping_odds)
+		self.assertEqual(sum(odds.values()), 1)
+
+
+	# pair in river with straight possibility - 3 with 1 card gap
+	def test_pair_river_three_in_straight_one_gap(self):
+		hand = ['5 diamonds', '10 hearts']
+		river = ['3 spades', '4 hearts', '6 clubs', '9 diamonds', '9 spades']
+		inputs = { 'stage': 'river', 'card_names': { 'hand': hand, 'river': river } }
+
+		odds = find_all_hand_types_odds(inputs)
+		looping_odds = find_odds_by_looping(inputs)
+
+		self.assertEqual(odds, looping_odds)
+		self.assertEqual(sum(odds.values()), 1)
+
+
+
+	# pair in river with straight possibility - 3 with 2 card gap
+	def test_pair_river_three_in_straight_two_gap(self):
+		hand = ['5 diamonds', '10 hearts']
+		river = ['3 spades', '4 hearts', '7 clubs', '9 diamonds', '9 spades']
+		inputs = { 'stage': 'river', 'card_names': { 'hand': hand, 'river': river } }
+
+		odds = find_all_hand_types_odds(inputs)
+		looping_odds = find_odds_by_looping(inputs)
+
+		self.assertEqual(odds, looping_odds)
+		self.assertEqual(sum(odds.values()), 1)
+
+
+	# pair in river with straight possibility - 4 in a row open ended
+	def test_pair_river_four_consecutive_open(self):
+		hand = ['5 diamonds', '10 hearts']
+		river = ['3 spades', '4 hearts', '5 clubs', '6 diamonds', '4 spades']
+		inputs = { 'stage': 'river', 'card_names': { 'hand': hand, 'river': river } }
+
+		odds = find_all_hand_types_odds(inputs)
+		looping_odds = find_odds_by_looping(inputs)
+
+		self.assertEqual(odds, looping_odds)
+		self.assertEqual(sum(odds.values()), 1)
+
+
+	# pair in river with straight possibility - 4 in a row one ended
+	def test_pair_river_four_consecutive_low_ace(self):
+		hand = ['5 diamonds', '10 hearts']
+		river = ['ace spades', '2 hearts', '3 clubs', '4 diamonds', '4 spades']
+		inputs = { 'stage': 'river', 'card_names': { 'hand': hand, 'river': river } }
+
+		odds = find_all_hand_types_odds(inputs)
+		looping_odds = find_odds_by_looping(inputs)
+
+		self.assertEqual(odds, looping_odds)
+		self.assertEqual(sum(odds.values()), 1)
+
+
+
+	# pair in river with straight possibility - 4 with middle gap
+	def test_pair_river_four_in_straight_with_gap(self):
+		hand = ['5 diamonds', '10 hearts']
+		river = ['3 spades', '4 hearts', '6 clubs', '7 diamonds', '3 spades']
+		inputs = { 'stage': 'river', 'card_names': { 'hand': hand, 'river': river } }
+
+		odds = find_all_hand_types_odds(inputs)
+		looping_odds = find_odds_by_looping(inputs)
+
+		self.assertEqual(odds, looping_odds)
+		self.assertEqual(sum(odds.values()), 1)
+
+
+
+
+
+	# -------------------------------------------------------------------------------------
+	# 
+	#	3 OF A KIND IN RIVER
+	# 
+	# -------------------------------------------------------------------------------------
+
+
+
+	# -------------------------------------------------------------------------------------
+	# 
+	#	4 OF A KIND IN RIVER
+	# 
+	# -------------------------------------------------------------------------------------
 
 
 
@@ -58,4 +259,7 @@ def main():
 
 
 if __name__ == "__main__":
-	main()
+	# TestOdds().test_pair_river_no_straight_or_flush()
+
+	# run all tests
+	unittest.main()

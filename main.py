@@ -53,6 +53,7 @@ def analyze_cards():
 	print("My hand: ", hand)
 	print("eval: ", my_hand.evaluate_hand())
 	print("All hand types odds: ", all_hand_types_odds)
+	print("sum of odds: ", str(sum(all_hand_types_odds.values())))
 
 	end_time = time.time()
 	print("total time (seconds) : ", str(end_time - start_time))

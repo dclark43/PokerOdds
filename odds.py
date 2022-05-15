@@ -122,10 +122,10 @@ def find_high_card_odds(river):
 			# 1st card rank can't match any card in river
 			# 2nd card cant match 1st card or any card in river
 			# odds for straight and flush must be subtracted
-			odds_high_card = (8/13) * (7/13) # subtract straight_odds and flush_odds
+			odds_high_card = ((8/13) * (7/13)) - (find_straight_odds(river) + find_flush_odds(river)) # subtract straight_odds and flush_odds
 		case _:
 			# impossible, every hand will be > high card by default
-			odds_high_card = 0
+			odds_high_card = 0.0
 
 	return odds_high_card
 
@@ -136,17 +136,21 @@ def find_high_card_odds(river):
 def find_pair_odds(river):
 	match river.max_rank_count:
 		case 1:
-			# 1st card rank must match one card in the river
-			# 2nd card cannot be any river card or the first card
+			# Scenario 1 (can be reversed so must * 2):
+			# 	1st card rank must match one card in the river
+			# 	2nd card cannot be any river card or the first card
+			# Scenario 2:
+			# 	1st card rank cannot be any rank that is in the river
+			# 	2nd card rank must be the same as 1st card
 			# subtract straight odds and flush odds
-			odds_pair = (5/13) * (8/13)
+			odds_pair = (2 * (5/13) * (8/13)) + ((8/13) * (1/13))
 		case 2:
 			# 1st card rank can't be the same as any in the river
 			# 2nd card rank can't be the same as any in the river or the 1st card
 			# subtract straight odds and flush odds
 			odds_pair = (9/13) * (8/13)
 		case _:
-			odds_pair = 0
+			odds_pair = 0.0
 
 	return odds_pair
 
@@ -163,12 +167,16 @@ def find_two_pair_odds(river):
 			odds_two_pair = (5/13) * (4/13)
 		case 2:
 			# ranks = (a, b, c, x, x)
-			# 1st card rank must match one card in the river that isn't x
-			# 2nd card rank cannot be x or 1st card rank
+			# Scenario 1:
+			# 	1st card rank must match one card in the river that isn't x
+			# 	2nd card rank cannot be x or 1st card rank
+			# Scenario 2:
+			# 	1st card rank can be anything but x
+			# 	2nd card rank must be a, b, c, or 1st card
 			# subtract straight odds and flush odds
-			odds_two_pair = (3/13) * (11/13)
+			odds_two_pair = (2 * (3/13) * (11/13)) + ((3/13) * (1/13))
 		case _:
-			odds_two_pair = 0
+			odds_two_pair = 0.0
 	
 	return odds_two_pair
 
@@ -188,7 +196,7 @@ def find_three_kind_odds(river):
 			# 1st card rank matches x
 			# 2nd card rank cannot be a, b, c, or x
 			# subtract straight odds and flush odds
-			odds_3_kind = (1/13) * (9/13)
+			odds_3_kind = 2 * (1/13) * (9/13)
 		case 3:
 			# ranks = (a, b, x, x, x)
 			# 1st card can be anything except a, b, or x
@@ -196,7 +204,7 @@ def find_three_kind_odds(river):
 			# subtract straight odds and flush odds
 			odds_3_kind = (10/13) * (9/13)
 		case _:
-			odds_3_kind = 0
+			odds_3_kind = 0.0
 	
 	return odds_3_kind
 
@@ -227,12 +235,35 @@ def find_straight_odds(river):
 
 	possible_straights = list(set(possible_straights))
 
-	odds_straight = 0
+	odds_straight = 0.0
 
+	cards_needed_list = []
+	two_cards_needed_count = 0
+	one_card_needed_count = 0
+
+	min_cards_needed = 5
 	for possible_straight in possible_straights:
 		cards_needed = [x for x in possible_straight if x not in river.ranks]
+		cards_needed_list.append(cards_needed)
+		if len(cards_needed) < min_cards_needed:
+			min_cards_needed = len(cards_needed)
+
+	for cards_needed in cards_needed_list:
 		if len(cards_needed) == 2:
+			two_cards_needed_count += 1
+		elif len(cards_needed) == 1:
+			one_card_needed_count += 1
+
+
+	
+	for possible_straight in possible_straights:
+		cards_needed = [x for x in possible_straight if x not in river.ranks]
+		if len(cards_needed) == 2 and min_cards_needed == 2:
+			odds_straight += 2 / (13 * 13)
+		elif len(cards_needed) == 2 and min_cards_needed == 1 and two_cards_needed_count == 1:
 			odds_straight += 1 / (13 * 13)
+		elif len(cards_needed) == 2 and min_cards_needed == 1 and two_cards_needed_count == 2 and one_card_needed_count == 1:
+			odds_straight += 1 / (13 * 13 * 2)
 		elif len(cards_needed) == 1:
 			odds_straight += 1 / 13
 		elif len(cards_needed) == 0:
@@ -264,7 +295,7 @@ def find_flush_odds(river):
 		# subtract odds of full house, 4 of a kind, and straight flush
 		odds_flush = 1.0
 	else:
-		odds_flush = 0
+		odds_flush = 0.0
 
 	return odds_flush
 
@@ -282,14 +313,14 @@ def find_full_house_odds(river):
 			# Scenario 2:
 			# 	1st card rank matches a, b, or c
 			# 	2nd card rank matches 1st card
-			odds_full_house = ((1/13) * (3/13)) + ((3/13) * (1/13))
+			odds_full_house = (3 * (1/13) * (3/13))
 		case 3:
 			# ranks = (a, b, x, x, x)
 			# 1st card rank must match a or b
 			# 2nd card can be anything except 1st card and x
 			odds_full_house = (2/13) * (11/13)
 		case _:
-			odds_full_house = 0
+			odds_full_house = 0.0
 	
 	return odds_full_house
 
@@ -315,7 +346,7 @@ def find_four_kind_odds(river):
 			# 2nd card rank cannot be x
 			odds_4_kind = (12/13) * (12/13)
 		case _:
-			odds_4_kind = 0
+			odds_4_kind = 0.0
 	
 	return odds_4_kind
 
@@ -324,7 +355,7 @@ def find_four_kind_odds(river):
 # Calculate the odds for any hand to be a straight flush given a river
 # 
 def find_straight_flush_odds(river):
-	return 0
+	return 0.0
 
 # 
 # Find the odds of every type of hand given a river
@@ -334,20 +365,49 @@ def find_all_hand_types_odds(inputs):
 	river = Hand(card_names_to_tuples(inputs["card_names"])["river"])
 
 	odds = {
-		'odds_high_card': find_high_card_odds(river),
-		'odds_pair': find_pair_odds(river),
-		'odds_two_pair': find_two_pair_odds(river),
-		'odds_3_kind': find_three_kind_odds(river),
-		'odds_straight': find_straight_odds(river),
-		'odds_flush': find_flush_odds(river),
-		'odds_full_house': find_full_house_odds(river),
-		'odds_4_kind': find_four_kind_odds(river),
-		'odds_straight_flush': find_straight_flush_odds(river)
+		'high_card': find_high_card_odds(river),
+		'pair': find_pair_odds(river),
+		'two_pair': find_two_pair_odds(river),
+		'three_kind': find_three_kind_odds(river),
+		'straight': find_straight_odds(river),
+		'flush': find_flush_odds(river),
+		'full_house': find_full_house_odds(river),
+		'four_kind': find_four_kind_odds(river),
+		'straight_flush': find_straight_flush_odds(river)
 	}
 
-	# if(inputs["stage"] == "river"):
+	for key in odds:
+		odds[key] = round(odds[key], 5)
 
 	return odds
 
 
 
+def find_odds_by_looping(inputs):
+	hand_evals = []
+	for suit1 in range(0, 4):
+		for rank1 in range(1, 14):
+			for suit2 in range(0, 4):
+				for rank2 in range(1, 14):
+					hand = [(suit1, rank1), (suit2, rank2)]
+					cards = Hand(card_names_to_tuples(inputs["card_names"])["river"] + hand)
+					eval = cards.evaluate_hand()
+					hand_evals.append(eval)
+
+	odds = {
+		'high_card': len([x for x in hand_evals if x[0] == 'high card']) / len(hand_evals),
+		'pair': len([x for x in hand_evals if x[0] == 'pair']) / len(hand_evals),
+		'two_pair': len([x for x in hand_evals if x[0] == 'two pair']) / len(hand_evals),
+		'three_kind': len([x for x in hand_evals if x[0] == '3 of a kind']) / len(hand_evals),
+		'straight': len([x for x in hand_evals if x[0] == 'straight']) / len(hand_evals),
+		'flush': len([x for x in hand_evals if x[0] == 'flush']) / len(hand_evals),
+		'full_house': len([x for x in hand_evals if x[0] == 'full house']) / len(hand_evals),
+		'four_kind': len([x for x in hand_evals if x[0] == '4 of a kind']) / len(hand_evals),
+		'straight_flush': len([x for x in hand_evals if x[0] == 'straight flush']) / len(hand_evals)
+	}
+
+	for key in odds:
+		odds[key] = round(odds[key], 5)
+					
+
+	return odds
